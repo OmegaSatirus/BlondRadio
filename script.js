@@ -1,56 +1,52 @@
-// ============================
-// CONFIG
-// ============================
-const STREAM_URL = "https://abusedly-crustless-beaulah.ngrok-free.dev/radio?nocache=1";
+const STREAM_URL = "https://abusedly-crustless-beaulah.ngrok-free.dev/radio";
 const STATUS_URL = "https://abusedly-crustless-beaulah.ngrok-free.dev/status-json.xsl";
 
-// ============================
-// ELEMENTOS
-// ============================
-const audio     = document.getElementById("radioPlayer");
-const playBtn   = document.getElementById("playBtn");
-const artistEl  = document.getElementById("trackArtist");
-const titleEl   = document.getElementById("trackTitle");
-const coverEl   = document.getElementById("coverArt");
-const liveEl    = document.getElementById("liveStatus");
+const player = document.getElementById("radioPlayer");
+const playBtn = document.getElementById("playBtn");
+const liveEl = document.getElementById("liveStatus");
 
-// ============================
-// ESTADO
-// ============================
+const artistEl = document.getElementById("trackArtist");
+const titleEl  = document.getElementById("trackTitle");
+const coverEl  = document.getElementById("coverArt");
+
+let isPlaying = false;
 let ultimaMusica = "";
 
-// ============================
-// PLAYER (compatível com mobile)
-// ============================
-audio.src = STREAM_URL;
-audio.preload = "none";
-audio.playsInline = true;
-
+/* ===============================
+   PLAY (mobile safe)
+================================ */
 playBtn.addEventListener("click", async () => {
+  if (isPlaying) return;
+
+  playBtn.textContent = "⏳ Conectando...";
+  playBtn.disabled = true;
+
+  // define o src SOMENTE no clique
+  player.src = STREAM_URL;
+  player.load();
+
   try {
-    await audio.play();
-    playBtn.style.display = "none";
+    await player.play();
+    isPlaying = true;
+
+    playBtn.textContent = "🔊 Ao vivo";
+    liveEl.textContent = "🔴 AO VIVO";
   } catch (err) {
-    alert("Toque novamente para iniciar o áudio");
+    console.error("Falha ao tocar:", err);
+    playBtn.textContent = "▶️ Tentar novamente";
+    playBtn.disabled = false;
   }
 });
 
-// reconecta se o Icecast travar
-audio.addEventListener("error", () => {
-  audio.load();
-});
-
-// ============================
-// ATUALIZAR STATUS / MÚSICA
-// ============================
+/* ===============================
+   STATUS / METADADOS
+================================ */
 async function atualizarMusica() {
   try {
     const res = await fetch(STATUS_URL, { cache: "no-store" });
     const data = await res.json();
 
     let source = data.icestats.source;
-
-    // múltiplos mounts
     if (Array.isArray(source)) {
       source = source.find(s => s.listenurl?.includes("/radio"));
     }
@@ -60,44 +56,24 @@ async function atualizarMusica() {
       return;
     }
 
-    liveEl.textContent = "🔴 AO VIVO";
-
     const icy = source?.metadata?.x_icy_title;
     if (!icy || icy === ultimaMusica) return;
 
     ultimaMusica = icy;
 
     let artista = "Desconhecido";
-    let musica  = icy;
+    let musica = icy;
 
     if (icy.includes(" - ")) {
       [artista, musica] = icy.split(" - ", 2);
     }
 
-    // animação simples
-    artistEl.style.opacity = 0;
-    titleEl.style.opacity  = 0;
-    coverEl.style.opacity  = 0;
-
-    setTimeout(() => {
-      artistEl.textContent = artista.trim();
-      titleEl.textContent  = musica.trim();
-
-      // capa padrão (Icecast não fornece capa)
-      coverEl.src = "cover-default.jpg";
-
-      artistEl.style.opacity = 1;
-      titleEl.style.opacity  = 1;
-      coverEl.style.opacity  = 1;
-    }, 300);
+    artistEl.textContent = artista.trim();
+    titleEl.textContent  = musica.trim();
 
   } catch (err) {
     liveEl.textContent = "🟡 CONECTANDO...";
   }
 }
 
-// ============================
-// INIT
-// ============================
-atualizarMusica();
 setInterval(atualizarMusica, 5000);
