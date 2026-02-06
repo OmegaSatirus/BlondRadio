@@ -1,79 +1,56 @@
 const STREAM_URL = "https://abusedly-crustless-beaulah.ngrok-free.dev/radio";
-const STATUS_URL = "https://abusedly-crustless-beaulah.ngrok-free.dev/status-json.xsl";
 
-const player = document.getElementById("radioPlayer");
 const playBtn = document.getElementById("playBtn");
-const liveEl = document.getElementById("liveStatus");
+const liveEl  = document.getElementById("liveStatus");
 
 const artistEl = document.getElementById("trackArtist");
 const titleEl  = document.getElementById("trackTitle");
-const coverEl  = document.getElementById("coverArt");
 
-let isPlaying = false;
-let ultimaMusica = "";
+let player = null;
+let tocando = false;
 
 /* ===============================
-   PLAY (mobile safe)
+   PLAY ANDROID-SAFE
 ================================ */
-playBtn.addEventListener("click", async () => {
-  if (isPlaying) return;
+playBtn.addEventListener("click", () => {
+  if (tocando) return;
 
   playBtn.textContent = "⏳ Conectando...";
   playBtn.disabled = true;
 
-  // define o src SOMENTE no clique
+  // 🔥 CRIA O AUDIO NO CLIQUE (ESSENCIAL)
+  player = document.createElement("audio");
   player.src = STREAM_URL;
-  player.load();
+  player.preload = "none";
+  player.playsInline = true;
+  player.autoplay = false;
+  player.controls = false;
 
-  try {
-    await player.play();
-    isPlaying = true;
+  document.body.appendChild(player);
 
-    playBtn.textContent = "🔊 Ao vivo";
-    liveEl.textContent = "🔴 AO VIVO";
-  } catch (err) {
-    console.error("Falha ao tocar:", err);
-    playBtn.textContent = "▶️ Tentar novamente";
-    playBtn.disabled = false;
+  const tentativa = player.play();
+
+  if (tentativa !== undefined) {
+    tentativa.then(() => {
+      tocando = true;
+      liveEl.textContent = "🔴 AO VIVO";
+      playBtn.textContent = "🔊 Tocando";
+    }).catch(err => {
+      console.error("Android bloqueou:", err);
+      resetarPlayer();
+    });
   }
 });
 
-/* ===============================
-   STATUS / METADADOS
-================================ */
-async function atualizarMusica() {
-  try {
-    const res = await fetch(STATUS_URL, { cache: "no-store" });
-    const data = await res.json();
+function resetarPlayer() {
+  tocando = false;
+  playBtn.disabled = false;
+  playBtn.textContent = "▶️ Tentar novamente";
+  liveEl.textContent = "⚠️ Toque para ouvir";
 
-    let source = data.icestats.source;
-    if (Array.isArray(source)) {
-      source = source.find(s => s.listenurl?.includes("/radio"));
-    }
-
-    if (!source) {
-      liveEl.textContent = "⚫ OFFLINE";
-      return;
-    }
-
-    const icy = source?.metadata?.x_icy_title;
-    if (!icy || icy === ultimaMusica) return;
-
-    ultimaMusica = icy;
-
-    let artista = "Desconhecido";
-    let musica = icy;
-
-    if (icy.includes(" - ")) {
-      [artista, musica] = icy.split(" - ", 2);
-    }
-
-    artistEl.textContent = artista.trim();
-    titleEl.textContent  = musica.trim();
-
-  } catch (err) {
-    liveEl.textContent = "🟡 CONECTANDO...";
+  if (player) {
+    player.pause();
+    player.remove();
+    player = null;
   }
 }
-
-setInterval(atualizarMusica, 5000);
