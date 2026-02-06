@@ -1,0 +1,151 @@
+/* =========================================
+   Reset & Fontes
+   ========================================= */
+   * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+@font-face {
+    font-family: Blond;
+    src: url("Blonde.otf");
+}
+#nowPlayingBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+#coverArt {
+    width: 220px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 14px;
+    transition: opacity 0.3s ease;
+}
+
+#trackArtist {
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: opacity 0.3s ease;
+}
+
+#trackTitle {
+    font-size: 1rem;
+    opacity: 0.85;
+    transition: opacity 0.3s ease;
+}
+
+/* =========================================
+   Estrutura Principal
+   ========================================= */
+#PageBody {
+    min-height: 100vh; /* Permite crescer se necessário */
+    width: 100%;
+    background-color: rgba(120, 120, 120, .2);
+    overflow-x: hidden; /* Evita rolagem lateral indesejada */
+}
+
+#PageHeader {
+    width: 100%;
+    min-height: 10vh; /* Altura mínima para não cortar conteúdo */
+    background-color: rgba(60, 60, 60, .2);
+    padding: 10px 0; /* Espaçamento interno para respiro */
+}
+
+#PageHeader H1 {
+    font-family: Blond, sans-serif; /* Fallback caso a fonte falhe */
+    font-size: clamp(1.5rem, 4%, 3rem); /* Tamanho de fonte dinâmico */
+}
+
+#Status {
+    width: 90%; /* Melhor que 80% para mobile */
+    max-width: 1200px; /* Trava a largura em telas grandes */
+    min-height: 5vh;
+    margin: 0 auto;
+}
+
+#FocousBody {
+    /* Layout */
+    display: flex;
+    flex-wrap: wrap; /* Permite que o conteúdo quebre linha */
+    
+    /* Tamanho e Espaçamento */
+    min-height: 85vh;
+    width: 90%;
+    max-width: 1200px; /* Profissional: evita esticar demais */
+    margin: 2vh auto;
+    padding: 20px; /* Adicionado padding interno */
+    
+    /* Estilo Visual */
+    background-color: rgba(255, 255, 255, .8);
+    border-radius: 34px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Sutil sombra para profundidade */
+}
+
+#MainArticle {
+    min-height: 60vh;
+    width: 100%; /* Ocupa o espaço disponível dentro do pai */
+    flex: 1; /* Cresce para ocupar espaço sobrando */
+}
+
+/* =========================================
+   Classes Utilitárias (Flexbox)
+   ========================================= */
+.AlinhadoBtw { justify-content: space-between; display: flex; align-items: center; }
+.AlinhadoArd { justify-content: space-around; display: flex; align-items: center; }
+.AlinhadoCen { justify-content: center; align-items: center; display: flex; text-align: center; }
+.AlinhadoDir { justify-content: flex-end; align-items: flex-end; display: flex; text-align: right; } /* Corrigido 'right' para 'flex-end' */
+.AlinhadoEsq { justify-content: flex-start; align-items: center; display: flex; text-align: left; } /* Corrigido para padrão Flex */
+
+.SmallButton {
+    width: auto;
+    min-width: 120px; /* Garante tamanho mínimo clicável */
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 12pt;
+    font-weight: bolder;
+    cursor: pointer; /* Indica clicável */
+}
+
+.FlexH { display: flex; flex-direction: row; flex-wrap: wrap; }
+.FlexV { display: flex; flex-direction: column; }
+
+/* =========================================
+   Responsividade (Media Queries)
+   ========================================= */
+
+/* Tablets e Celulares (Telas menores que 768px) */
+@media (max-width: 768px) {
+    #FocousBody {
+        width: 95%; /* Aproveita mais a tela no celular */
+        margin-top: 10px;
+        border-radius: 20px; /* Reduz a curva para economizar espaço */
+        flex-direction: column; /* Empilha o conteúdo verticalmente */
+        padding: 15px;
+    }
+
+    #Status {
+        width: 95%;
+        font-size: 0.9em;
+    }
+
+    #MainArticle {
+        width: 100%; /* Artigo ocupa largura total no celular */
+        height: auto; /* Altura automática conforme o texto */
+    }
+
+    .SmallButton {
+        width: 100%; /* Botões full-width no celular facilitam o toque */
+        margin: 5px 0;
+    }
+    
+    /* Ajuste para as classes de alinhamento em mobile, se necessário */
+    .FlexH {
+        justify-content: center;
+    }
+}

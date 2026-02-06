@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blond Radio</title>
+
+    <link rel="stylesheet" href="style2.css" />
+  </head>
+
+  <body id="PageBody">
+    <header id="PageHeader" class="AlinhadoCen">
+      <h1>Blond Radio – JC’s Cut</h1>
+    </header>
+
+    <main id="FocousBody" class="AlinhadoCen FlexV">
+
+      <!-- STATUS -->
+      <!-- <div id="Status">
+        <h2 id="liveStatus">🟡 CONECTANDO...</h2>
+      </div> -->
+
+      <!-- PLAYER -->
+      <div id="audio" class="AlinhadoCen FlexV">
+        <audio
+          id="radioPlayer"
+          playsinline
+          preload="none"
+        ></audio>
+
+        <!-- botão obrigatório para mobile -->
+        <button id="playBtn">
+          ▶️ Ouvir ao vivo
+        </button>
+      </div>
+
+      <!-- TOCANDO AGORA -->
+      <div id="nowPlayingBox" class="AlinhadoCen FlexV">
+        <p>Ao clicar em ouvir espere um pouco</p>
+        <p>(5-10s)</p>
+        <img
+          id="coverArt"
+          src="8esqueleto.webp"
+          alt="Capa do álbum"
+        />
+<!-- 
+        <p id="trackArtist">—</p>
+        <p id="trackTitle">—</p> -->
+      </div>
+
+    </main>
+
+    <footer id="FooterBody"></footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
